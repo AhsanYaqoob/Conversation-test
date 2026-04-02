@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 SITE_API_KEY = os.getenv('SITE_API_KEY', '')
 TARGET_URL = os.getenv(
     'TARGET_URL',
-    'https://lorraine-uninstalled-odilia.ngrok-free.dev/admindummy'
+    'https://website-to-scrape.com/admin'
 )
 
 
