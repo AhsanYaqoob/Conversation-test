@@ -1,0 +1,8 @@
+playwright
+fastapi
+uvicorn[standard]
+google-genai
+python-dotenv
+beautifulsoup4
+apscheduler
+jinja2

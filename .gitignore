@@ -1,0 +1,12 @@
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+data/sessions.json
+data/latest_order.json
+*.log
+.DS_Store
+Thumbs.db
