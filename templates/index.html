@@ -131,8 +131,9 @@
 
     container.innerHTML = list.map(s => {
       const analysis  = s.analysis || {};
-      const hasRealAI = ['ok','warning','error'].includes(analysis.overall_status);
-      const aiKey     = hasRealAI ? analysis.overall_status : (s.scrape_error ? 'error' : 'pending');
+      const isAnalysisError = analysis.overall_status === 'error' && (analysis.summary || '').startsWith('Analysis error:');
+      const hasRealAI = ['ok','warning','error'].includes(analysis.overall_status) && !isAnalysisError;
+      const aiKey     = hasRealAI ? analysis.overall_status : (isAnalysisError || s.scrape_error ? 'error' : 'pending');
       const cfg       = AI_CFG[aiKey] || AI_CFG.pending;
       const issues    = analysis.issues || [];
       const summary   = analysis.summary
@@ -152,7 +153,8 @@
         actionBtn = `<button class="btn-analyze" disabled>⏳</button>`;
       } else {
         const isLocked = analyzingId !== null;
-        actionBtn = `<button class="btn-analyze" id="abtn-${s.session_id}" ${isLocked ? 'disabled' : ''} onclick="event.stopPropagation(); runAnalyze('${s.session_id}')">🔍 Analyze</button>`;
+        const label = isAnalysisError ? '🔄 Retry' : '🔍 Analyze';
+        actionBtn = `<button class="btn-analyze" id="abtn-${s.session_id}" ${isLocked ? 'disabled' : ''} onclick="event.stopPropagation(); runAnalyze('${s.session_id}')">${label}</button>`;
       }
 
       return `
@@ -297,8 +299,9 @@
 
   function buildAnalysis(s) {
     const analysis  = s.analysis || {};
-    const hasRealAI = ['ok','warning','error'].includes(analysis.overall_status);
-    const status    = hasRealAI ? analysis.overall_status : 'pending';
+    const isAnalysisError = analysis.overall_status === 'error' && (analysis.summary || '').startsWith('Analysis error:');
+    const hasRealAI = ['ok','warning','error'].includes(analysis.overall_status) && !isAnalysisError;
+    const status    = hasRealAI ? analysis.overall_status : (isAnalysisError ? 'error' : 'pending');
     const cfg       = AI_CFG[status] || AI_CFG.pending;
     const issues    = analysis.issues || [];
     const hasData   = (s.conversation && s.conversation.length > 0) || s.result_json;
@@ -307,12 +310,15 @@
       const isAnalyzing = analyzingId === s.session_id;
       return `
       <div class="not-analyzed-box">
-        <div style="font-size:32px; margin-bottom:12px;">🔍</div>
+        <div style="font-size:32px; margin-bottom:12px;">${isAnalysisError ? '❌' : '🔍'}</div>
         ${hasData
           ? isAnalyzing
             ? `<p>Analyzing…</p><button class="btn-analyze-lg" disabled><span class="spin">⏳</span> Running…</button>`
-            : `<p>This session hasn't been analyzed yet.</p>
-               <button class="btn-analyze-lg" id="panel-analyze-btn" onclick="runAnalyzeFromPanel('${s.session_id}')">Run AI Analysis</button>`
+            : isAnalysisError
+              ? `<p style="color:#ef4444;">Previous analysis failed:<br><code style="font-size:12px">${esc(analysis.summary)}</code></p>
+                 <button class="btn-analyze-lg" id="panel-analyze-btn" onclick="runAnalyzeFromPanel('${s.session_id}')">🔄 Retry Analysis</button>`
+              : `<p>This session hasn't been analyzed yet.</p>
+                 <button class="btn-analyze-lg" id="panel-analyze-btn" onclick="runAnalyzeFromPanel('${s.session_id}')">Run AI Analysis</button>`
           : `<p style="color:#94a3b8;">No conversation or result data available to analyze.</p>`
         }
       </div>`;

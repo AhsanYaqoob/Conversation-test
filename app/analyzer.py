@@ -102,8 +102,7 @@ Rules:
 """
 
     try:
-        model = genai.GenerativeModel(GEMINI_MODEL)
-        response = model.generate_content(prompt)
+        response = _client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
         text = response.text.strip()
 
         # Strip markdown fences if present

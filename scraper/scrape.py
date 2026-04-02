@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 SITE_API_KEY = os.getenv('SITE_API_KEY', '')
 TARGET_URL = os.getenv(
-    'TARGET_URL',
-    'https://website-to-scrape.com/admin'
+    'TARGET_URL'
 )
 
 

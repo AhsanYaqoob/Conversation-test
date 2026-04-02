@@ -79,9 +79,10 @@ async def analyze_one(session_id: str):
     if not session:
         return {'error': 'Session not found', 'session_id': session_id}
 
-    # Return existing analysis if it's a real result (not pending/error from missing data)
+    # Return existing analysis only if it's a successful result (ok or warning)
+    # Error results are allowed to be retried
     existing = session.get('analysis', {})
-    if existing and existing.get('overall_status') in ('ok', 'warning', 'error'):
+    if existing and existing.get('overall_status') in ('ok', 'warning'):
         return {'analysis': existing, 'cached': True}
 
     # Refuse to analyze sessions with no data
