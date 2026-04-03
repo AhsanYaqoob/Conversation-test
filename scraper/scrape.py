@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import asyncio
 import logging
@@ -9,10 +10,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Force Playwright to use browsers installed inside the project directory
-# This ensures it works on Render where the default cache path is wiped
-_BROWSERS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ms-playwright')
-os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', _BROWSERS_PATH)
+# On Linux (Render), force browsers to live inside the project so they survive
+# between build and runtime. On Windows (local dev), use the default venv path.
+if sys.platform != 'win32' and 'PLAYWRIGHT_BROWSERS_PATH' not in os.environ:
+    _BROWSERS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ms-playwright')
+    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = _BROWSERS_PATH
 
 logger = logging.getLogger(__name__)
 
