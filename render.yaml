@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: conversation-test
+    runtime: python
+    buildCommand: pip install -r requirements.txt && playwright install chromium --with-deps
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SITE_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TARGET_URL
+        sync: false
+      - key: CRON_INTERVAL_MINUTES
+        value: "5"
+      - key: GEMINI_MODEL
+        value: "gemini-2.5-flash"
