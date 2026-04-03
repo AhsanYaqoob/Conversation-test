@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Force Playwright to use browsers installed inside the project directory
+# This ensures it works on Render where the default cache path is wiped
+_BROWSERS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ms-playwright')
+os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', _BROWSERS_PATH)
+
 logger = logging.getLogger(__name__)
 
 SITE_API_KEY = os.getenv('SITE_API_KEY', '')
