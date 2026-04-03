@@ -17,6 +17,9 @@
     </div>
     <div class="header-right">
       <span id="lastUpdate" class="last-update"></span>
+      <button id="darkToggle" class="btn-dark" onclick="toggleDark()" title="Toggle dark mode">
+        <span id="darkIcon">🌙</span> <span id="darkLabel">Dark</span>
+      </button>
       <button id="refreshBtn" class="btn-refresh" onclick="triggerRefresh()">
         <span id="refreshIcon">🔄</span> Refresh
       </button>
@@ -89,6 +92,28 @@
 
 <!-- ── Script ─────────────────────────────────────────────────────────────── -->
 <script>
+  // ── Dark mode ──────────────────────────────────────────────────────────────
+  (function initDark() {
+    if (localStorage.getItem('darkMode') === '1') {
+      document.body.classList.add('dark');
+    }
+  })();
+
+  function toggleDark() {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDark ? '1' : '0');
+    document.getElementById('darkIcon').textContent  = isDark ? '☀️' : '🌙';
+    document.getElementById('darkLabel').textContent = isDark ? 'Light' : 'Dark';
+  }
+
+  // sync button label on page load
+  window.addEventListener('DOMContentLoaded', function() {
+    if (document.body.classList.contains('dark')) {
+      document.getElementById('darkIcon').textContent  = '☀️';
+      document.getElementById('darkLabel').textContent = 'Light';
+    }
+  });
+
   let sessions = [];
   let polling = null;
   let analyzingId = null;  // only one analysis at a time
